@@ -91,7 +91,7 @@ if __name__ == '__main__':
         # XXX: Look out for response == None
         # and possibly add the statement to a retry queue
         response = remote_lrs.save_statement(statement)
-        if not response:
+        if not response.success:
             print("Failed to save statement for %s" % (csv_entry,))
 
         
