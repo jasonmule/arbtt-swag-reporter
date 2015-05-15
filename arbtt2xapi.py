@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import os
 
 from config import lrs, activity_map
 from arbtt_record import ArbttRecord
+
 
 from tincan import (
     RemoteLRS,
@@ -64,6 +66,8 @@ def create_statement(arbtt_csv_entry):
 
 if __name__ == '__main__':
     import fileinput
+    import sys
+
 
     csv_entries = (l.strip() for l in fileinput.input())
     
@@ -79,12 +83,16 @@ if __name__ == '__main__':
     for csv_entry in csv_entries:
         try:
             statement = create_statement(csv_entry)
-        except ValueError:
+        except ValueError, e:
             # ignore invalid entries
+            print("Failed to create statement for %s with the error: %s"
+                  % (csv_entry, e), file=sys.stderr)
             continue
         # XXX: Look out for response == None
         # and possibly add the statement to a retry queue
         response = remote_lrs.save_statement(statement)
+        if not response:
+            print("Failed to save statement for %s" % (csv_entry,))
 
         
 
